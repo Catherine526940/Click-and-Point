@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import filedialog
 from PIL import Image, ImageTk, ImageDraw
 
 # 初始化窗口
@@ -12,13 +13,15 @@ draw = None
 line_width = 5  # 设置线的宽度
 
 # 加载图片
-def load_image(image_path):
+def load_image():
     global img, img_tk, draw
-    img = Image.open(image_path)
-    img_tk = ImageTk.PhotoImage(img)
-    img_label.config(image=img_tk)
-    img_label.image = img_tk
-    draw = ImageDraw.Draw(img)  # 创建一个可以在img上绘图的对象
+    file_path = filedialog.askopenfilename()  # 弹出文件选择对话框
+    if file_path:
+        img = Image.open(file_path)
+        img_tk = ImageTk.PhotoImage(img)
+        img_label.config(image=img_tk)
+        img_label.image = img_tk
+        draw = ImageDraw.Draw(img)  # 创建一个可以在img上绘图的对象
 
 # 画线
 def draw_line(event):
@@ -37,16 +40,19 @@ def save_image():
     global img
     if img is not None:
         img.save("processed_image.png")
-        tk.messagebox.showinfo("保存成功", "图片已保存为 processed_image.jpg")
-    else:
-        tk.messagebox.showinfo("错误", "没有加载图片")
+        tk.messagebox.showinfo("保存成功", "图片已保存为 processed_image.png")
+        # 保存后重置画布
+        draw = ImageDraw.Draw(img)
+        img_tk = ImageTk.PhotoImage(img)
+        img_label.config(image=img_tk)
+        img_label.image = img_tk
 
 # 创建图片标签
 img_label = tk.Label(root)
 img_label.pack()
 
 # 创建按钮
-load_button = tk.Button(root, text="加载图片", command=lambda: load_image("D:\\My_Table\\17.png"))
+load_button = tk.Button(root, text="加载图片", command=load_image)
 load_button.pack()
 
 draw_button = tk.Button(root, text="画线", command=draw_line)
